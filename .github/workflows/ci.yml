@@ -1,36 +1,63 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ main ]  
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    runs-on: "ubuntu-latest"
+    container: bradmccoydev/terraform-plan-validator:latest
+    env:
+      PATH_TO_TF_FILES: ./src
+      
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: Terraform Init
+      run: |-
+        cd $PATH_TO_TF_FILES
+        terraform init
+        
+    - name: Generate TFSEC report
+      run: |-
+        cd $PATH_TO_TF_FILES
+        tfsec . --soft-fail
+        
+    - name: Terraform Plan
+      run: |-
+        cd $PATH_TO_TF_FILES
+        terraform plan -var-file=deployment/devops.tfvars -out $GITHUB_SHA.tfplan
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    - name: Terraform Validate
+      id: terraformValidate
+      run: |-
+        cd $PATH_TO_TF_FILES
+        terraform show -json $GITHUB_SHA.tfplan > $GITHUB_SHA.json
+        cp /terraform-plan-validator/app.env ./app.env
+        cp /terraform-plan-validator/opa-azure-policy.rego ./opa-azure-policy.rego
+        VALIDATION_PASSED=$(terraform-plan-validator check -p "$GITHUB_SHA.json" -c "azure")
+        SCORE=$(terraform-plan-validator opascore -p "$GITHUB_SHA.json" -c "azure")
+        
+        echo "::set-output name=VALIDATION_PASSED::$VALIDATION_PASSED"
+        echo "Validation result: $VALIDATION_PASSED"
+        echo "OPA score: $SCORE"
+        rm $GITHUB_SHA.json
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - name: Terraform Auto Apply
+      if: steps.terraformValidate.outputs.VALIDATION_PASSED == 'true'
+      run: |-
+        cd $PATH_TO_TF_FILES
+        TF_PLAN="$GITHUB_SHA.tfplan"
+        echo $TF_PLAN
+        # terraform apply $TF_PLAN 
+        rm $TF_PLAN
+    - name: Terraform Manual Apply
+      if: steps.terraformValidate.outputs.VALIDATION_PASSED == 'false'
+      run: |-
+        cd $PATH_TO_TF_FILES
+        TF_PLAN="$GITHUB_SHA.tfplan"
+        echo $TF_PLAN
+        # terraform apply $TF_PLAN 
+        rm $TF_PLAN

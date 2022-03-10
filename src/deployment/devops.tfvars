@@ -5,7 +5,7 @@ client_project_id           = "gitops"
 client_environment          = "prod"
 client_project_admin        = "bradmccoydev@gmail.com"
 client_budget_amount        = 0
-client_project_repo         = "https://github.com/bradmccoydev/aks"
+client_project_repo         = "https://github.com/bradmccoydev/eks"
 client_access_groups        = ["9611561b-0599-4b2e-b4e2-a190faa1d388"]
 client_project_dependencies = []
 

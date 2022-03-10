@@ -8,21 +8,6 @@ module "aws_vpc" {
   tags = var.tags
 } 
 
-# resource "aws_security_group" "app_servers" {
-#   name        = "app-servers"
-#   description = "For application servers"
-#   vpc_id      = data.aws_vpc.default.id
-# }
-
-# resource "aws_security_group_rule" "allow_access" {
-#   type                     = "ingress"
-#   from_port                = module.aurora.this_rds_cluster_port
-#   to_port                  = module.aurora.this_rds_cluster_port
-#   protocol                 = "tcp"
-#   source_security_group_id = aws_security_group.app_servers.id
-#   security_group_id        = module.aurora.this_security_group_id
-# }
-
 module "aws_eip" {
   source = "./modules/aws/network/elastic_ip/terraform"
   vpc = true
