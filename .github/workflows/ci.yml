@@ -24,7 +24,11 @@ jobs:
       run: |-
         cd $PATH_TO_TF_FILES
         tfsec . --soft-fail
-        
+
+    - name: Infra Cost
+      run: |-
+        infracost --version
+
     - name: Terraform Plan
       run: |-
         cd $PATH_TO_TF_FILES
@@ -53,6 +57,7 @@ jobs:
         echo $TF_PLAN
         # terraform apply $TF_PLAN 
         rm $TF_PLAN
+
     - name: Terraform Manual Apply
       if: steps.terraformValidate.outputs.VALIDATION_PASSED == 'false'
       run: |-

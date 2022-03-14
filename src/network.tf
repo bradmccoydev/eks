@@ -3,100 +3,100 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "aws_vpc" {
-  source = "github.com/bradmccoydev/terraform-modules//aws/aws_vpc?ref=0.0.1"
+  source     = "github.com/bradmccoydev/terraform-modules//aws/aws_vpc?ref=0.0.1"
   cidr_block = var.cidr_block
-  tags = var.tags
-} 
+  tags       = var.tags
+}
 
 module "aws_eip" {
   source = "./modules/aws/network/elastic_ip/terraform"
-  vpc = true
-} 
+  vpc    = true
+}
 
 module "aws_internet_gateway" {
-  source  = "./modules/aws/network/internet_gateway/terraform"
-  vpc_id  = module.aws_vpc.id
-  tags    = var.tags
-} 
+  source = "./modules/aws/network/internet_gateway/terraform"
+  vpc_id = module.aws_vpc.id
+  tags   = var.tags
+}
 
 module "aws_subnet_public_1" {
-  source = "./modules/aws/network/subnet/terraform"
-  vpc_id             = module.aws_vpc.id
-  cidr_block         = var.public_subnet_cidr_block_1
-  availability_zone  = var.availability_zone_1
-} 
+  source            = "./modules/aws/network/subnet/terraform"
+  vpc_id            = module.aws_vpc.id
+  cidr_block        = var.public_subnet_cidr_block_1
+  availability_zone = var.availability_zone_1
+}
 
 module "aws_subnet_public_2" {
-  source = "./modules/aws/network/subnet/terraform"
-  vpc_id             = module.aws_vpc.id
-  cidr_block         = var.public_subnet_cidr_block_2
-  availability_zone  = var.availability_zone_2
-} 
+  source            = "./modules/aws/network/subnet/terraform"
+  vpc_id            = module.aws_vpc.id
+  cidr_block        = var.public_subnet_cidr_block_2
+  availability_zone = var.availability_zone_2
+}
 
 module "aws_subnet_private_1" {
-  source = "./modules/aws/network/subnet/terraform"
-  vpc_id             = module.aws_vpc.id
-  cidr_block         = var.private_subnet_cidr_block_1
-  availability_zone  = var.availability_zone_1
-} 
+  source            = "./modules/aws/network/subnet/terraform"
+  vpc_id            = module.aws_vpc.id
+  cidr_block        = var.private_subnet_cidr_block_1
+  availability_zone = var.availability_zone_1
+}
 
 module "aws_subnet_private_2" {
-  source = "./modules/aws/network/subnet/terraform"
-  vpc_id             = module.aws_vpc.id
-  cidr_block         = var.private_subnet_cidr_block_2
-  availability_zone  = var.availability_zone_2
-} 
+  source            = "./modules/aws/network/subnet/terraform"
+  vpc_id            = module.aws_vpc.id
+  cidr_block        = var.private_subnet_cidr_block_2
+  availability_zone = var.availability_zone_2
+}
 
 module "aws_route_table_public" {
-  source  = "./modules/aws/network/route_table/terraform"
-  vpc_id  = module.aws_vpc.id
-} 
+  source = "./modules/aws/network/route_table/terraform"
+  vpc_id = module.aws_vpc.id
+}
 
 module "aws_route_public" {
-  source  = "./modules/aws/network/route/terraform"
+  source                 = "./modules/aws/network/route/terraform"
   route_table_id         = module.aws_route_table_public.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = module.aws_internet_gateway.id
-} 
+}
 
 module "aws_route_table_private" {
-  source  = "./modules/aws/network/route_table/terraform"
-  vpc_id  = module.aws_vpc.id
-} 
+  source = "./modules/aws/network/route_table/terraform"
+  vpc_id = module.aws_vpc.id
+}
 
 module "aws_route_private" {
-  source  = "./modules/aws/network/route/terraform"
+  source                 = "./modules/aws/network/route/terraform"
   route_table_id         = module.aws_route_table_private.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = module.aws_internet_gateway.id
-} 
+}
 
 module "aws_nat_gateway" {
-  source  = "./modules/aws/network/nat_gateway/terraform"
+  source        = "./modules/aws/network/nat_gateway/terraform"
   allocation_id = module.aws_eip.id
   subnet_id     = module.aws_subnet_public_1.id
-} 
+}
 
 module "aws_route_table_association_private_1" {
-  source  = "./modules/aws/network/aws_route_table_association/terraform"
-  subnet_id     = module.aws_subnet_private_1.id
+  source         = "./modules/aws/network/aws_route_table_association/terraform"
+  subnet_id      = module.aws_subnet_private_1.id
   route_table_id = module.aws_route_private.id
-} 
+}
 
 module "aws_route_table_association_private_2" {
-  source  = "./modules/aws/network/aws_route_table_association/terraform"
-  subnet_id     = module.aws_subnet_private_2.id
+  source         = "./modules/aws/network/aws_route_table_association/terraform"
+  subnet_id      = module.aws_subnet_private_2.id
   route_table_id = module.aws_route_private.id
-} 
+}
 
 module "aws_route_table_association_public_1" {
-  source  = "./modules/aws/network/aws_route_table_association/terraform"
-  subnet_id     = module.aws_subnet_public_1.id
+  source         = "./modules/aws/network/aws_route_table_association/terraform"
+  subnet_id      = module.aws_subnet_public_1.id
   route_table_id = module.aws_route_public.id
-} 
+}
 
 module "aws_route_table_association_public_2" {
-  source  = "./modules/aws/network/aws_route_table_association/terraform"
-  subnet_id     = module.aws_subnet_public_2.id
+  source         = "./modules/aws/network/aws_route_table_association/terraform"
+  subnet_id      = module.aws_subnet_public_2.id
   route_table_id = module.aws_route_public.id
 } 
