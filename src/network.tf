@@ -3,100 +3,95 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 module "aws_vpc" {
-  source     = "github.com/bradmccoydev/terraform-modules//aws/aws_vpc?ref=0.0.1"
+  source     = "github.com/bradmccoydev?ref=release-0.0.1-modules//aws/aws_vpc?ref=release-0.0.1"
   cidr_block = var.cidr_block
-  tags       = var.tags
+  tags       = merge(local.tags, var.cloud_custom_tags)
 }
 
 module "aws_eip" {
-  source = "./modules/aws/network/elastic_ip/terraform"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/elastic_ip?ref=release-0.0.1"
   vpc    = true
 }
 
 module "aws_internet_gateway" {
-  source = "./modules/aws/network/internet_gateway/terraform"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/internet_gateway?ref=release-0.0.1"
   vpc_id = module.aws_vpc.id
-  tags   = var.tags
+  tags   = merge(local.tags, var.cloud_custom_tags)
 }
 
 module "aws_subnet_public_1" {
-  source            = "./modules/aws/network/subnet/terraform"
+  source            = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/subnet?ref=release-0.0.1"
   vpc_id            = module.aws_vpc.id
   cidr_block        = var.public_subnet_cidr_block_1
   availability_zone = var.availability_zone_1
 }
 
 module "aws_subnet_public_2" {
-  source            = "./modules/aws/network/subnet/terraform"
+  source            = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/subnet?ref=release-0.0.1"
   vpc_id            = module.aws_vpc.id
   cidr_block        = var.public_subnet_cidr_block_2
   availability_zone = var.availability_zone_2
 }
 
 module "aws_subnet_private_1" {
-  source            = "./modules/aws/network/subnet/terraform"
-  vpc_id            = module.aws_vpc.id
-  cidr_block        = var.private_subnet_cidr_block_1
-  availability_zone = var.availability_zone_1
-}
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/subnet?ref=release-0.0.1"
+  for_each = {
+    var.availability_zone_1 = var.private_subnet_cidr_block_1,
+    var.availability_zone_2 = var.private_subnet_cidr_block_2
+  }
 
-module "aws_subnet_private_2" {
-  source            = "./modules/aws/network/subnet/terraform"
+  availability_zone = each.key
+  cidr_block        = each.value
   vpc_id            = module.aws_vpc.id
-  cidr_block        = var.private_subnet_cidr_block_2
-  availability_zone = var.availability_zone_2
 }
 
 module "aws_route_table_public" {
-  source = "./modules/aws/network/route_table/terraform"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/route_table?ref=release-0.0.1"
+  vpc_id = module.aws_vpc.id
+}
+
+module "aws_route_table_private" {
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/route_table?ref=release-0.0.1"
   vpc_id = module.aws_vpc.id
 }
 
 module "aws_route_public" {
-  source                 = "./modules/aws/network/route/terraform"
+  source                 = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/route?ref=release-0.0.1"
   route_table_id         = module.aws_route_table_public.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = module.aws_internet_gateway.id
 }
 
-module "aws_route_table_private" {
-  source = "./modules/aws/network/route_table/terraform"
-  vpc_id = module.aws_vpc.id
-}
-
 module "aws_route_private" {
-  source                 = "./modules/aws/network/route/terraform"
+  source                 = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/route?ref=release-0.0.1"
   route_table_id         = module.aws_route_table_private.id
   destination_cidr_block = "0.0.0.0/0"
   gateway_id             = module.aws_internet_gateway.id
 }
 
 module "aws_nat_gateway" {
-  source        = "./modules/aws/network/nat_gateway/terraform"
+  source        = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/nat_gateway?ref=release-0.0.1"
   allocation_id = module.aws_eip.id
   subnet_id     = module.aws_subnet_public_1.id
 }
 
-module "aws_route_table_association_private_1" {
-  source         = "./modules/aws/network/aws_route_table_association/terraform"
-  subnet_id      = module.aws_subnet_private_1.id
+module "aws_route_table_association_private" {
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_route_table_association?ref=release-0.0.1"
+  for_each = toset([
+    aws_subnet.private_1.id,
+    aws_subnet.private_2.id
+  ])
+  subnet_id      = each.value
   route_table_id = module.aws_route_private.id
 }
 
-module "aws_route_table_association_private_2" {
-  source         = "./modules/aws/network/aws_route_table_association/terraform"
-  subnet_id      = module.aws_subnet_private_2.id
-  route_table_id = module.aws_route_private.id
-}
+module "aws_route_table_association_public" {
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_route_table_association?ref=release-0.0.1"
+  for_each = toset([
+    aws_subnet.public_1.id,
+    aws_subnet.public_2.id
+  ])
 
-module "aws_route_table_association_public_1" {
-  source         = "./modules/aws/network/aws_route_table_association/terraform"
-  subnet_id      = module.aws_subnet_public_1.id
-  route_table_id = module.aws_route_public.id
+  subnet_id      = each.value
+  route_table_id = aws_route_table.public.id
 }
-
-module "aws_route_table_association_public_2" {
-  source         = "./modules/aws/network/aws_route_table_association/terraform"
-  subnet_id      = module.aws_subnet_public_2.id
-  route_table_id = module.aws_route_public.id
-} 

@@ -13,13 +13,13 @@ locals {
 }
 
 module "aws_secretsmanager_secret" "default" {
-  source = "github.com/bradmccoydev/terraform-modules//aws/aws_secretsmanager_secret"
+  source = "github.com/bradmccoydev/terraform-modules//aws/aws_secretsmanager_secret?ref=release-0.0.1"
   name   = "${var.secret_name}-${random_string.random.result}"
   tags   = merge(local.tags, var.cloud_custom_tags)
 }
 
 module "aws_secretsmanager_secret_version" "default" {
-  source        = "github.com/bradmccoydev/terraform-modules//aws/aws_secretsmanager_secret_version"
+  source        = "github.com/bradmccoydev/terraform-modules//aws/aws_secretsmanager_secret_version?ref=release-0.0.1"
   secret_id     = aws_secretsmanager_secret.default.id
   secret_string = jsonencode(local.cluster_details)
 }
