@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket         = "training.bradmccoy.io"
-    key            = "eks.tfstate"
+    key            = "eks-devops.tfstate"
     region         = "us-west-2"
     dynamodb_table = "terraform_locks"
     encrypt        = true

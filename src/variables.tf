@@ -41,11 +41,6 @@ variable "cloud_account_id" {
   type        = string
 }
 
-variable "cloud_multi_region" {
-  description = "Cloud Multi Region Region Required"
-  type        = bool
-}
-
 variable "cloud_location_1" {
   description = "Cloud Location (region)"
 }
@@ -81,132 +76,42 @@ variable "cloud_container_registry_enabled" {
   description = "Container Registry Enabled"
 }
 
-# Cloud Location 1
-variable "cloud_location_1_bastion_enabled" {
-  description = "Cloud Bastion Enabled"
-}
-variable "cloud_location_1_network_cidr_range_bastion" {
-  type        = string
-  description = "Cloud Network CIDR Range"
-}
-
-variable "cloud_location_1_subnet_cidr_range_bastion_vm" {
-  type        = string
-  description = "Cloud Subnet Cidr Range Bastion VM"
-}
-
-variable "cloud_location_1_subnet_cidr_range_bastion_service" {
-  type        = string
-  description = "Cloud Subnet Cidr Range Bastion Service"
-}
-
-variable "cloud_location_1_network_cidr_range_kubernetes" {
-  type        = string
-  description = "Cloud Network CIDR Range"
-}
-
-variable "cloud_location_1_subnet_public_name_1" {
-  type        = string
-  description = "Cloud Location"
-}
-
-variable "cloud_location_1_subnet_public_cidr_1" {
-  type        = string
-  description = "Cloud Location"
-}
-
-# Kubernetes
-
-variable "kubernetes_node_size" {
-  type        = string
-  description = "Cloud Location"
-}
-
-variable "kubernetes_network_policy" {
-  type        = string
-  description = "Cloud Location"
-}
-
-variable "kubernetes_node_disk_size" {
-  type        = string
-  description = "Cloud Location"
-}
-
-variable "kubernetes_initial_node_count" {
-  type        = string
-  description = "Cloud Location"
-}
-
-variable "kubernetes_max_node_count" {
-  type        = string
-  description = "Cloud Location"
-}
-
-/* 
-variable "vpc_cidr_block" {
-  type        = string
-  description = "cidr block for VPC addresses."
-}
-
-variable "subnets" {
-  type = list(object({
-    type              = string
-    cidr_block        = string,
-    availability_zone = string
-  }))
-
-  description = <<SNET
-  Defines values requried to define subnets. There must be two availability zones. e.g.;
-  [
-    {
-      type = "public-1",
-      cidr_block = "10.0.1.0/24",
-      availability_zone = "ap-southeast-2a"
-    },
-    {
-      type = "private-1",
-      cidr_block = "10.0.2.0/24",
-      availability_zone = "ap-southeast-2b"
-    }
-  ]
-  SNET
-}
-
-variable "iam_role_name" {
-  type        = string
-  description = "Role Name"
-}
-
-variable "assume_policy_role" {
-  type = object({
-    Version = string
-    Statement = list(
-      object({
-        Action = string
-        Effect = string
-        Principal = object({
-          Service = string
-        })
-      })
-    ),
-  })
-}
-
-variable "sg_name" {
-  type        = string
-  description = "Security Group Name"
-}
-
-variable "sg_description" {
-  type        = string
-  description = "Security Group Description"
-}
-
-variable "cluster_name" {
-  type        = string
-  description = "Name of the cluster"
-} */
-
 variable "tags" {
   type = map(string)
+}
+
+# Network
+variable "cidr_block" {
+  description = "VPC Cidr block"
+  default     = "10.1.0.0/16"
+}
+
+variable "public_subnet_cidr_block_1" {
+  description = "public subnet 1 CIDR block"
+  default     = "10.1.10.0/24"
+}
+
+variable "public_subnet_cidr_block_2" {
+  description = "public subnet 2 CIDR block"
+  default     = "10.1.20.0/24"
+}
+
+variable "private_subnet_cidr_block_1" {
+  description = "private subnet 1 CIDR block"
+  default     = "10.1.50.0/24"
+}
+
+variable "private_subnet_cidr_block_2" {
+  description = "private subnet 2 CIDR block"
+  default     = "10.1.60.0/24"
+}
+
+variable "availability_zone_1" {
+  description = "Availability zone 1"
+  default     = "us-west-2a"
+}
+
+variable "availability_zone_2" {
+  description = "Availability zone 2"
+  default     = "us-west-2b"
 }
