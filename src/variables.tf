@@ -26,22 +26,9 @@ variable "client_project_admin" {
   type        = string
   description = "The Client Project Admin"
 }
-variable "client_budget_amount" {
-  description = "Monthly budget amount in AUD."
-  type        = number
-}
 
 variable "client_project_repo" {
   description = "Project source control repository"
-}
-
-variable "client_access_groups" {
-  description = "Client Access Groups"
-  default     = []
-}
-variable "client_project_dependencies" {
-  description = "Project dependencies"
-  type        = list(string)
 }
 
 variable "cloud_tenant_id" {

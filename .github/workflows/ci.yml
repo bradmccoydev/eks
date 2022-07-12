@@ -15,54 +15,54 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     
-    - name: Terraform Init
-      run: |-
-        cd $PATH_TO_TF_FILES
-        terraform init
+    # - name: Terraform Init
+    #   run: |-
+    #     cd $PATH_TO_TF_FILES
+    #     terraform init
         
-    - name: Generate TFSEC report
-      run: |-
-        cd $PATH_TO_TF_FILES
-        tfsec . --soft-fail
+    # - name: Generate TFSEC report
+    #   run: |-
+    #     cd $PATH_TO_TF_FILES
+    #     tfsec . --soft-fail
 
-    - name: Infra Cost
-      run: |-
-        infracost --version
+    # - name: Infra Cost
+    #   run: |-
+    #     infracost --version
 
-    - name: Terraform Plan
-      run: |-
-        cd $PATH_TO_TF_FILES
-        terraform plan -var-file=deployment/devops.tfvars -out $GITHUB_SHA.tfplan
+    # - name: Terraform Plan
+    #   run: |-
+    #     cd $PATH_TO_TF_FILES
+    #     terraform plan -var-file=deployment/devops.tfvars -out $GITHUB_SHA.tfplan
 
-    - name: Terraform Validate
-      id: terraformValidate
-      run: |-
-        cd $PATH_TO_TF_FILES
-        terraform show -json $GITHUB_SHA.tfplan > $GITHUB_SHA.json
-        cp /terraform-plan-validator/app.env ./app.env
-        cp /terraform-plan-validator/opa-azure-policy.rego ./opa-azure-policy.rego
-        VALIDATION_PASSED=$(terraform-plan-validator check -p "$GITHUB_SHA.json" -c "azure")
-        SCORE=$(terraform-plan-validator opascore -p "$GITHUB_SHA.json" -c "azure")
+    # - name: Terraform Validate
+    #   id: terraformValidate
+    #   run: |-
+    #     cd $PATH_TO_TF_FILES
+    #     terraform show -json $GITHUB_SHA.tfplan > $GITHUB_SHA.json
+    #     cp /terraform-plan-validator/app.env ./app.env
+    #     cp /terraform-plan-validator/opa-azure-policy.rego ./opa-azure-policy.rego
+    #     VALIDATION_PASSED=$(terraform-plan-validator check -p "$GITHUB_SHA.json" -c "azure")
+    #     SCORE=$(terraform-plan-validator opascore -p "$GITHUB_SHA.json" -c "azure")
         
-        echo "::set-output name=VALIDATION_PASSED::$VALIDATION_PASSED"
-        echo "Validation result: $VALIDATION_PASSED"
-        echo "OPA score: $SCORE"
-        rm $GITHUB_SHA.json
+    #     echo "::set-output name=VALIDATION_PASSED::$VALIDATION_PASSED"
+    #     echo "Validation result: $VALIDATION_PASSED"
+    #     echo "OPA score: $SCORE"
+    #     rm $GITHUB_SHA.json
 
-    - name: Terraform Auto Apply
-      if: steps.terraformValidate.outputs.VALIDATION_PASSED == 'true'
-      run: |-
-        cd $PATH_TO_TF_FILES
-        TF_PLAN="$GITHUB_SHA.tfplan"
-        echo $TF_PLAN
-        # terraform apply $TF_PLAN 
-        rm $TF_PLAN
+    # - name: Terraform Auto Apply
+    #   if: steps.terraformValidate.outputs.VALIDATION_PASSED == 'true'
+    #   run: |-
+    #     cd $PATH_TO_TF_FILES
+    #     TF_PLAN="$GITHUB_SHA.tfplan"
+    #     echo $TF_PLAN
+    #     # terraform apply $TF_PLAN 
+    #     rm $TF_PLAN
 
-    - name: Terraform Manual Apply
-      if: steps.terraformValidate.outputs.VALIDATION_PASSED == 'false'
-      run: |-
-        cd $PATH_TO_TF_FILES
-        TF_PLAN="$GITHUB_SHA.tfplan"
-        echo $TF_PLAN
-        # terraform apply $TF_PLAN 
-        rm $TF_PLAN
+    # - name: Terraform Manual Apply
+    #   if: steps.terraformValidate.outputs.VALIDATION_PASSED == 'false'
+    #   run: |-
+    #     cd $PATH_TO_TF_FILES
+    #     TF_PLAN="$GITHUB_SHA.tfplan"
+    #     echo $TF_PLAN
+    #     # terraform apply $TF_PLAN 
+    #     rm $TF_PLAN

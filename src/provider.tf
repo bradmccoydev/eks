@@ -1,15 +1,15 @@
 terraform {
-  backend "s3" {
-    bucket         = "mentoring-eks-terraform"
-    key            = "mentoring-eks.tfstate"
-    region         = "ap-southeast-2"
-    dynamodb_table = "terraform_lock"
-    encrypt        = true
+  required_version = ">= 0.13.0"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 4.14, < 5.0"
+    }
   }
 }
 
 provider "aws" {
-  region = "ap-southeast-2"
+  region = "us-west-2"
 }
 
 provider "random" {
