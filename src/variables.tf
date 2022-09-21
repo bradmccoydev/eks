@@ -35,6 +35,10 @@ variable "cloud_transient_instance" {
   description = "The environment"
 }
 
+variable "bastion_ips_to_whitelist" {
+  description = "Bastion IP's to Whitelist"
+}
+
 variable "cloud_custom_tags" {
   type = map(string)
 }

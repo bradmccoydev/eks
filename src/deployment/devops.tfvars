@@ -15,7 +15,13 @@ cloud_location_1 = {
   alias = "us-west-2"
 }
 
-cloud_location_1_bastion_enabled                   = true
+kubernetes_node_size          = "t3.medium"
+kubernetes_network_policy     = "calico"
+kubernetes_node_disk_size     = 30
+kubernetes_initial_node_count = 1
+kubernetes_max_node_count     = 3
+
+cloud_location_1_bastion_enabled                   = false
 cloud_location_1_network_cidr_range_bastion        = "10.0.0.0/16"
 cloud_location_1_subnet_cidr_range_bastion_vm      = "10.0.0.0/24"
 cloud_location_1_subnet_cidr_range_bastion_service = "10.0.1.0/24"
@@ -24,8 +30,11 @@ cloud_location_1_network_cidr_range   = "10.1.0.0/16"
 cloud_location_1_subnet_public_name_1 = "kubernetes"
 cloud_location_1_subnet_public_cidr_1 = "10.1.0.0/21"
 
-kubernetes_node_size          = "t3.medium"
-kubernetes_network_policy     = "calico"
-kubernetes_node_disk_size     = 30
-kubernetes_initial_node_count = 1
-kubernetes_max_node_count     = 3
+bastion_ips_to_whitelist = [
+  {
+    name                = "brad_home_au"
+    ip                  = "58.6.235.242/32"
+    ingress_rule_number = 89
+    egress_rule_number  = 88
+  },
+]
