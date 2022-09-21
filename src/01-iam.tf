@@ -1,8 +1,8 @@
 module "cluster_aws_iam_role" {
-  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.0.3"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.0.9"
 
-  role_name = format("eks-%s-%s", var.name, var.environment)
-  assume_policy_role_object = jsonencode({
+  role_name = format("eks-%s", local.shared_name)
+  assume_policy_role_object = {
     Version = "2012-10-17"
     Statement = [
       {
@@ -12,9 +12,9 @@ module "cluster_aws_iam_role" {
         Principal = {
           Service = "eks.amazonaws.com"
         }
-      },
+      }
     ]
-  })
+  }
 
   policy_arns = [
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
@@ -25,10 +25,10 @@ module "cluster_aws_iam_role" {
 }
 
 module "cluster_node_aws_iam_role" {
-  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.0.3"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.0.9"
 
-  role_name = format("eks-%s-%s-node", var.name, var.environment)
-  assume_policy_role_object = jsonencode({
+  role_name = format("eks-%s-node", local.shared_name)
+  assume_policy_role_object = {
     Version = "2012-10-17"
     Statement = [{
       Action = "sts:AssumeRole"
@@ -37,22 +37,20 @@ module "cluster_node_aws_iam_role" {
         Service = "ec2.amazonaws.com"
       }
     }]
-    Version = "2012-10-17"
-  })
+  }
 
   policy_arns = [
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy",
-    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-    aws_iam_policy.default_eks.arn
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   ]
 
   tags = merge(local.tags, var.cloud_custom_tags)
 }
 
 resource "aws_iam_policy" "default_eks" {
-  name        = format("eks-%s-%s", var.name, var.environment)
-  description = "EKS ${var.environment} Policy"
+  name        = local.primary_name
+  description = "EKS ${var.client_environment} Policy"
   policy      = <<EOF
 {
     "Statement": [
@@ -68,4 +66,9 @@ resource "aws_iam_policy" "default_eks" {
     "Version": "2012-10-17"
 }
 EOF
+}
+
+resource "aws_iam_role_policy_attachment" "defaul" {
+  role       = module.cluster_node_aws_iam_role.name
+  policy_arn = aws_iam_policy.default_eks.arn
 }

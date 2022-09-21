@@ -16,7 +16,6 @@ locals {
     project     = var.client_project_id
   }
 
-  shared_name    = "${var.client_project_id}-${var.client_environment}"
+  shared_name    = format("%s-%s",var.client_project_id,var.client_environment)
   primary_name   = "${var.client_project_id}-${var.cloud_location_1.alias}-${var.client_environment}"
-  secondary_name = "${var.client_project_id}-${var.cloud_location_2.alias}-${var.client_environment}"
 }
