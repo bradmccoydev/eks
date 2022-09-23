@@ -1,5 +1,5 @@
 module "cluster_aws_iam_role" {
-  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.0.9"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.1.0"
 
   role_name = format("eks-%s", local.shared_name)
   assume_policy_role_object = {
@@ -25,7 +25,7 @@ module "cluster_aws_iam_role" {
 }
 
 module "cluster_node_aws_iam_role" {
-  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.0.9"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.1.0"
 
   role_name = format("eks-%s-node", local.shared_name)
   assume_policy_role_object = {

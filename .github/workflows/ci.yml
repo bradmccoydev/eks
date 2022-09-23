@@ -15,24 +15,20 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     
-    # - name: Terraform Init
-    #   run: |-
-    #     cd $PATH_TO_TF_FILES
-    #     terraform init
+    - name: Terraform Init
+      run: |-
+        cd $PATH_TO_TF_FILES
+        terraform init -var-file=deployment/devops.tfvars
         
-    # - name: Generate TFSEC report
-    #   run: |-
-    #     cd $PATH_TO_TF_FILES
-    #     tfsec . --soft-fail
+    - name: Generate TFSEC report
+      run: |-
+        cd $PATH_TO_TF_FILES
+        tfsec . --soft-fail
 
-    # - name: Infra Cost
-    #   run: |-
-    #     infracost --version
-
-    # - name: Terraform Plan
-    #   run: |-
-    #     cd $PATH_TO_TF_FILES
-    #     terraform plan -var-file=deployment/devops.tfvars -out $GITHUB_SHA.tfplan
+    - name: Terraform Plan
+      run: |-
+        cd $PATH_TO_TF_FILES
+        terraform plan -var-file=deployment/devops.tfvars -out $GITHUB_SHA.tfplan
 
     # - name: Terraform Validate
     #   id: terraformValidate

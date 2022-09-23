@@ -1,9 +1,10 @@
 module "rds" {
-  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_rds_instance?ref=tags/v0.0.9"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_rds_instance?ref=tags/v0.1.0"
 
   name              = local.shared_name
   db_name           = "metabase"
   db_username       = "metabase"
+  db_port           = 5432
   vpc_id            = module.network.vpc_id
   subnet_ids        = [module.network.private_subnet_1, module.network.private_subnet_2]
   db_instance_class = "db.t3.medium"
