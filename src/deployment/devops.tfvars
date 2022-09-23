@@ -34,7 +34,5 @@ bastion_ips_to_whitelist = [
   {
     name                = "brad_home_au"
     ip                  = "58.6.235.242/32"
-    ingress_rule_number = 89
-    egress_rule_number  = 88
   },
 ]

@@ -13,5 +13,5 @@ module "bastion" {
     sudo apt install traceroute
   EOF
 
-  tags = merge(local.common_tags, var.custom_tags)
+  tags = merge(local.tags, var.cloud_custom_tags)
 }

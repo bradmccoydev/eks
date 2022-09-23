@@ -52,6 +52,10 @@ variable "cloud_container_registry_enabled" {
   description = "Container Registry Enabled"
 }
 
+variable "cloud_location_1_bastion_enabled" {
+  description = "Cloud location 2 bastion enabled"
+}
+
 # Network
 variable "cidr_block" {
   description = "VPC Cidr block"
