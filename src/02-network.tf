@@ -2,7 +2,7 @@
 # AWS Network
 # ---------------------------------------------------------------------------------------------------------------------
 module "network" {
-  source               = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/network?ref=tags/v0.1.0"
+  source               = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/network?ref=tags/v0.1.1"
   cidr_block           = var.cidr_block
   public_subnet_cidrs  = ["10.1.10.0/24", "10.1.20.0/24"]
   private_subnet_cidrs = ["10.1.50.0/24", "10.1.60.0/24"]

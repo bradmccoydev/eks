@@ -1,5 +1,5 @@
 module "cluster_aws_iam_role" {
-  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.1.0"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.1.1"
 
   role_name = format("eks-%s", local.shared_name)
   assume_policy_role_object = {
@@ -25,7 +25,7 @@ module "cluster_aws_iam_role" {
 }
 
 module "cluster_node_aws_iam_role" {
-  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.1.0"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_iam_role?ref=tags/v0.1.1"
 
   role_name = format("eks-%s-node", local.shared_name)
   assume_policy_role_object = {
@@ -61,6 +61,25 @@ resource "aws_iam_policy" "default_eks" {
               "${module.aws_ecr_repository.arn}"
           ],
           "Sid": "VisualEditor1"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "route53:ChangeResourceRecordSets"
+          ],
+          "Resource": [
+            "arn:aws:route53:::hostedzone/*"
+          ]
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "route53:ListHostedZones",
+            "route53:ListResourceRecordSets"
+          ],
+          "Resource": [
+            "*"
+          ]
         }
     ],
     "Version": "2012-10-17"

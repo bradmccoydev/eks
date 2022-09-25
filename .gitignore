@@ -8,3 +8,4 @@
 .terraform.lock.hcl
 secret.txt
 dockerconfig.json
+secret.txt

@@ -1,5 +1,5 @@
 module "rds" {
-  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_rds_instance?ref=tags/v0.1.0"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_rds_instance?ref=tags/v0.1.1"
 
   name              = local.shared_name
   db_name           = "metabase"

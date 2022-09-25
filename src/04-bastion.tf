@@ -1,6 +1,6 @@
 module "bastion" {
   count  = var.cloud_location_1_bastion_enabled  ? 1 : 0
-  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_bastion?ref=tags/v0.1.0"
+  source = "git::https://github.com/bradmccoydev/terraform-modules.git//aws/aws_bastion?ref=tags/v0.1.1"
 
   name             = local.primary_name
   vpc_id           = var.cidr_block
